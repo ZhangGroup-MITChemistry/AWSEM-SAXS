@@ -1,0 +1,45 @@
+# Example collective variable file for a wall. Include this at the end of the defined collective variables to include
+
+colvar {
+name    wall
+prbias {
+ atoms {
+ indexGroup alpha_carbons
+ }
+ prbias          true
+PrFile          wall.pr
+alpha           wall_alpha.txt
+ prindex         1
+    }
+}
+
+colvar {
+    name    wall2
+        prbias {
+             atoms {
+                  indexGroup alpha_carbons
+                       }
+              prbias          true
+                  PrFile          wall.pr
+                  alpha           wall_alpha.txt
+                   prindex         2
+                       }
+}
+
+
+
+linear {
+name              wall_bias
+colvars           wall
+centers           0
+forceConstant     1
+outputEnergy      no
+}
+
+linear {
+    name              wall_bias2
+        colvars           wall2
+        centers           0
+        forceConstant     1
+        outputEnergy      no
+}
