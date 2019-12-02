@@ -1,0 +1,38 @@
+p(r) bias Guide:
+
+Installation:
+1. replace collective variables package with colvars from AWSEM-SAXS folder (used lammps 2016 originally)
+2. go to colvars folder, make colvars package (“make –f Makefile.g++”)
+3. go to lammps directory make lammps (“make clean-all; make openmpi”)
+
+Starting a project:
+1. Set up AWSEM
+2. Get p(r) from experiment.
+3. Normalize to N(N-1)/2. May want to make less bins to speed simulation. Can be done
+by: “python pr_normalize.py old_file new_file N“
+4. Set up collective variables. “python pr_setup.py pdbid”, takes p(r) file called $pdbid.pr
+and makes a new collective variable file called $pdbid.colvars. Also makes a file called
+alpha.txt which is a vector of 0s to start as alpha.
+5. Collective variables options:
+	a. PrFile- p(r) file.
+	b. alpha- file with a list of numbers with the same length as the number of p(r) bins.
+	Each alpha is the linear bias for that bin.
+	c. prindex- each collective variable is a different bin in the p(r). This is the index
+	related to that bin.
+	d. cutoff- number of nearest neighbors to exclude, including yourself. Would need
+	to separately remove secondary structure interactions from experimental p(r).
+	Default value is 1.
+6. May want to implement a ‘’wall”, see example in wall_option. Biases to prevent protein
+from expanding beyond the maximum size. Must replace max in wall.pr with the maximum protein size.
+
+Proceeding to next iteration:
+1. Run LAMMPS simulation
+2. If using tempering, create the trajectory at the desired temperature using
+select_colvars_traj.py
+3. If using multiple replicas, combine with combine_colvars.py
+4. Calculate Error using calc_error.py. Calculates error, which is the first line of the file.
+Standard deviation of each histogram bin is subsequent lines. (“python calc_error.py
+colvars_file pr_file”)
+5. Calculate next alpha using iterate_alpha.py. (“python iterate_alpha.py old_alpha_file
+colvars_file pr_file temp tol cutEig force_const”). Reasonable values for the force_const are 0.005-0.0001. Often, it is helpful to try a few values of the force constant at the same time to speed up convergence.
+6. Result is a file called new_alpha.txt. Replace alpha.txt with this file and repeat the LAMMPS simulation until error has converged, approximately 10-5%.
