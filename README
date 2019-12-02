@@ -1,4 +1,6 @@
 p(r) bias Guide:
+This set of scripts adds a bias to recreate the pair-wise probability of electron density, taken directly from SAXS data.
+The methodology is described in Latham, A.; Zhang, B. J. Phys. Chem. B 2019, 123, 5, 1026-1034.
 
 Installation:
 1. replace collective variables package with colvars from AWSEM-SAXS folder (used lammps 2016 originally)
